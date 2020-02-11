@@ -22,13 +22,13 @@ run:
 	python main.py
 
 run/docker:
-	docker build -t vivareal/py-sqs-worker:latest . \
+	docker build -t rbarbioni/py-sqs-worker:latest . \
 	&& docker run -it \
 	-e AWS_ACCESS_KEY_ID=foo \
 	-e AWS_SECRET_ACCESS_KEY=foo \
 	-e AWS_DEFAULT_REGION=us-east-1 \
 	--net=host \
-	vivareal/py-sqs-worker:latest
+	rbarbioni/py-sqs-worker:latest
 
 run/docker-compose:
 	docker-compose -f docker-compose.yml up --build
