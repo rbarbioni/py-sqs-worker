@@ -1,0 +1,61 @@
+version: '3.7'
+services:
+  py-sqs-worker:
+    image: rbarbioni/py-sqs-worker
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - ENV_FOR_DYNACONF=docker
+      - AWS_ACCESS_KEY_ID=foo
+      - AWS_SECRET_ACCESS_KEY=foo
+      - AWS_DEFAULT_REGION=us-east-1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    depends_on:
+      - localstack
+      - aws
+    links:
+      - localstack
+      - aws
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+
+  localstack:
+    image: atlassianlabs/localstack
+    ports:
+      - "4576:4576"
+    environment:
+      - SERVICES=sqs
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 300M
+        reservations:
+          cpus: '0.30'
+          memory: 250M
+      restart_policy:
+        condition: on-failure
+
+  aws:
+    image: garland/aws-cli-docker
+    links:
+      - localstack
+    depends_on:
+      - localstack
+    environment:
+      - AWS_ACCESS_KEY_ID=foo
+      - AWS_SECRET_ACCESS_KEY=foo
+      - AWS_DEFAULT_REGION=us-east-1
+    command: >
+      sh -c "aws --endpoint-url=http://localstack:4576 --region=us-east-1 sqs create-queue --queue-name dev-sqs-test"
