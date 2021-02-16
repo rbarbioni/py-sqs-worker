@@ -30,10 +30,10 @@ This project use Python 3.6
 ## Before Run
 If you don't have python 3.6 installed, run
 ```bash
-pyenv install 3.6.9
+pyenv install 3.6.8
 ```
 
-Pipenv will use python 3.6.9 just instaled
+Pipenv will use python 3.6.8 just instaled
 ```bash
 make install
 ```
